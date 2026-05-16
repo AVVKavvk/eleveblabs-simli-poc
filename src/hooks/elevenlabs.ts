@@ -1,62 +1,66 @@
-import { useConversation } from "@elevenlabs/react";
-import { useState, useCallback } from "react";
+import { Conversation } from "@elevenlabs/client";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "https://back.archietechos.com";
+// ⚠️ WARNING: Only use xi-api-key on frontend for quick local testing!
 
-export function useArchieVoice() {
-  const [isConnecting, setIsConnecting] = useState(false);
+// import { useConversation } from "@elevenlabs/react";
+// import { useState, useCallback } from "react";
 
-  const conversation = useConversation({
-    onConnect: () => {
-      setIsConnecting(false);
-    },
-    onDisconnect: () => {
-      setIsConnecting(false);
-    },
-    onError: () => {
-      setIsConnecting(false);
-      console.error("Error while connecting to agent");
-    },
-    onAudio(base64Audio: string) {},
-  });
+// const API_BASE =
+//   import.meta.env.VITE_API_BASE_URL || "https://back.archietechos.com";
 
-  const start = useCallback(async () => {
-    setIsConnecting(true);
-    try {
-      await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+// export function useArchieVoice() {
+//   const [isConnecting, setIsConnecting] = useState(false);
 
-      const res = await fetch(`${API_BASE}/api/signed-url`);
-      if (!res.ok) throw new Error("Failed to get signed URL");
+//   const conversation = useConversation({
+//     onConnect: () => {
+//       setIsConnecting(false);
+//     },
+//     onDisconnect: () => {
+//       setIsConnecting(false);
+//     },
+//     onError: () => {
+//       setIsConnecting(false);
+//       console.error("Error while connecting to agent");
+//     },
+//     onAudio(base64Audio: string) {},
+//   });
 
-      const data = await res.json();
-      if (!data.signedUrl) throw new Error("No signed URL received");
+//   const start = useCallback(async () => {
+//     setIsConnecting(true);
+//     try {
+//       await navigator.mediaDevices.getUserMedia({
+//         audio: {
+//           echoCancellation: true,
+//           noiseSuppression: true,
+//           autoGainControl: true,
+//         },
+//       });
 
-      await conversation.startSession({
-        signedUrl: data.signedUrl,
-        connectionType: "websocket",
-      });
-    } catch (err) {
-      setIsConnecting(false);
-    }
-  }, [conversation]);
+//       const res = await fetch(`${API_BASE}/api/signed-url`);
+//       if (!res.ok) throw new Error("Failed to get signed URL");
 
-  const stop = useCallback(async () => {
-    await conversation.endSession();
-  }, [conversation]);
+//       const data = await res.json();
+//       if (!data.signedUrl) throw new Error("No signed URL received");
 
-  return {
-    start,
-    stop,
-    isConnecting,
-    status: conversation.status,
-    isSpeaking: conversation.isSpeaking,
-    isConnected: conversation.status === "connected",
-  };
-}
+//       await conversation.startSession({
+//         signedUrl: data.signedUrl,
+//         connectionType: "websocket",
+//       });
+//     } catch (err) {
+//       setIsConnecting(false);
+//     }
+//   }, [conversation]);
+
+//   const stop = useCallback(async () => {
+//     await conversation.endSession();
+//   }, [conversation]);
+
+//   return {
+//     start,
+//     stop,
+//     isConnecting,
+//     status: conversation.status,
+//     isSpeaking: conversation.isSpeaking,
+//     isConnected: conversation.status === "connected",
+//   };
+// }
